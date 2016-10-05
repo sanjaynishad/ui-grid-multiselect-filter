@@ -17,9 +17,9 @@ angular.module('ui.grid.multiselect.filter', ['ngAnimate', 'ngTouch', 'ui.grid',
   $scope.title = col.field;
   $scope.showModal = function() {
     $scope.listOfTerms = [];
-    $scope.col.grid.appScope.gridOptions.data.forEach( function ( row ) {
-      if ( $scope.listOfTerms.indexOf( row[col.field] ) === -1 ) {
-        $scope.listOfTerms.push( row[col.field] );
+    $scope.col.grid.rows.forEach( function ( row ) {
+      if ( $scope.listOfTerms.indexOf( row.entity[col.field] ) === -1 ) {
+        $scope.listOfTerms.push( row.entity[col.field] );
       }
     });
     $scope.listOfTerms.sort();
