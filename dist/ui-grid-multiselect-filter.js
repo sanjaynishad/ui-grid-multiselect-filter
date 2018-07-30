@@ -11,11 +11,14 @@ if (!Element.prototype.closest) Element.prototype.closest = function (selector) 
 
 angular.module('ui.grid.multiselect.filter', ['ngAnimate', 'ngTouch', 'ui.grid', 'ui.grid.selection'])
 .controller('multiSelectCtrl', ["$scope", "$compile", "$timeout", "$element", "$attrs", "$parse", function($scope, $compile, $timeout, $element, $attrs, $parse) {
+  var elementScope;
   var $elm;
   var col = $scope.col;
   $scope.colFilter = $scope.col.filters[0];
   $scope.title = col.field;
   $scope.showModal = function() {
+    if (elementScope) elementScope.$destroy();
+    elementScope = $scope.$new();
     $scope.listOfTerms = [];
     $scope.col.grid.rows.forEach( function ( row ) {
       if ( $scope.listOfTerms.indexOf( row.entity[col.field] ) === -1 ) {
@@ -55,7 +58,7 @@ angular.module('ui.grid.multiselect.filter', ['ngAnimate', 'ngTouch', 'ui.grid',
     $elm = angular.element(html);
     angular.element($element[0].closest('div[ui-grid]')).append($elm);
     
-    $compile($elm)($scope);
+    $compile($elm)(elementScope);
   };
   
   $scope.cancel = function() {
@@ -79,8 +82,13 @@ angular.module('ui.grid.multiselect.filter', ['ngAnimate', 'ngTouch', 'ui.grid',
     $scope.colFilter.term = $scope.colFilter.listTerm.join(', ');
     $scope.colFilter.condition = new RegExp($scope.colFilter.listTerm.join('|'));
     
+    if (elementScope) {
+        elementScope.$destroy();
+        elementScope = null;
+    }
     if ($elm) {
       $elm.remove();
+      $elm = null;
     }
     
     $parse($attrs.onFilter)($scope, { $terms: $scope.colFilter.listTerm });
